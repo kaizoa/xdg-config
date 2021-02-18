@@ -1,49 +1,6 @@
 - set_fact: date="{{lookup('pipe','date +%Y%m%d')}}"
 
 
-- name: Tap homebrew repositories
-  homebrew_tap: tap={{ item }}
-  with_items:
-    - sanemat/font
-    - caskroom/cask
-    - caskroom/homebrew-versions
-
-
-- name: Update homebrew
-  homebrew: 
-    update_homebrew: yes
-    upgrade_all: no
-
-- name: Install homebrew packages
-  homebrew: name={{ item.name }} install_options={{ item.install_options|default()|join(',') }}
-  with_items:
-    - { name: ansible }
-    - { name: git }
-    - { name: jq }
-    - { name: fish }
-    - { name: tmux }
-    - { name: neovim }
-    - { name: direnv }
-    - { name: awscli }
-    - { name: yarn }
-    - { name: tig }
-    - { name: ranger }
-    - { name: global }
-    - { name: ctags }
-    - { name: ag }
-    - { name: tree }
-    - { name: graphviz }
-    - { name: coreutils }
-    - { name: chromedriver }
-    - { name: git-secrets }
-    - { name: reattach-to-user-namespace }
-    - { name: go }
-    - { name: dep }
-    - { name: hub }
-    - { name: ghq }
-    - { name: peco }
-
-
 # - name: Install oh-my-fish
 #   shell: curl -sSL http://get.oh-my.fish | fish
 #   args:
@@ -62,36 +19,6 @@
   args:
       executable: /bin/bash
   changed_when: false
-
-
-- name: Install homebrew cask packages
-  homebrew_cask: name={{ item.name }}
-  with_items:
-    - { name: iterm2 }
-    - { name: visual-studio-code }
-    - { name: gimp }
-    - { name: google-chrome }
-    - { name: google-japanese-ime }
-    - { name: slack }
-    - { name: sequel-pro }
-    - { name: skype }
-    - { name: sourcetree }
-
-
-# Install Ricty
-- name: Install xquartz for ricty
-  homebrew_cask: name=xquartz
-- name: Install ricty
-  homebrew: name={{ item.name }} install_options={{ item.install_options|default()|join(',') }}
-  with_items:
-    - { name: fontforge}
-    - { name: ricty,     install_options: with-powerline } # FIXME オプションが渡らない
-- name: Copy Ricty fonts to ~/Library/Fonts
-  shell: |
-      cp -f $(brew --cellar ricty)/*/share/fonts/Ricty*.ttf ~/Library/Fonts/
-      fc-cache -vf
-  args:
-    creates: ~/Library/Fonts/Ricty-Bold.ttf
 
 - name: Install anyenv
   git: repo={{ item.repo }} dest={{ item.dest }} update=no
@@ -124,19 +51,18 @@
       creates: ~/.anyenv/envs/{{ item.env }}/versions/{{ item.version }}
   with_items:
     - { env: 'ndenv',  version: '9.7.1' }
+    - { env: 'ndenv',  version: '9.3.0' }
+    - { env: 'ndenv',  version: '8.11.4' }
     - { env: 'ndenv',  version: '6.13.0' }
     - { env: 'ndenv',  version: '6.10.3' }
-    - { env: 'goenv',  version: '1.10.0' }
-    - { env: 'goenv',  version: '1.9.4' }
-    - { env: 'goenv',  version: '1.8.7' }
-    - { env: 'goenv',  version: '1.8.1' }
-    - { env: 'pyenv',  version: '3.6.4'  }
-    - { env: 'pyenv',  version: '3.6.1'  }
-    - { env: 'phpenv', version: '5.6.30' }
+    - { env: 'goenv',  version: '1.12.0' }
+    - { env: 'pyenv',  version: '3.6.4' }
+    # - { env: 'phpenv', version: '5.6.36' }
+    - { env: 'phpenv', version: '7.2.7' }
 
 
 - name: Install pyenv-virtualenv
-  git: 
+  git:
     repo: 'https://github.com/yyuu/pyenv-virtualenv'
     dest: '~/.anyenv/envs/pyenv/plugins/pyenv-virtualenv'
     update: no

@@ -1,3 +1,7 @@
 **/.DS_Store
-/hub
+/.vscode
+/vscode/globalStorage
 /vscode/workspaceStorage
+/iterm2
+/anyenv
+/hub

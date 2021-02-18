@@ -13,24 +13,7 @@ XDG_CONFIG_HOME=$(HOME)/.config
 
 .PHONY: xdg-config
 xdg-config:
-	if [ -e $(XDG_CONFIG_HOME) -a ! -L $(XDG_CONFIG_HOME) ]; then\
-  rm -rf $(XDG_CONFIG_HOME);\
-fi
 	ln -fns $(shell pwd) ${XDG_CONFIG_HOME}
-
-
-.PHONY: git
-git: homebrew
-ifeq ($(shell type git 2> /dev/null),)
-	brew install git
-endif
-
-
-.PHONY: ansible
-ansible: homebrew
-ifeq ($(shell type ansible-playbook 2> /dev/null),)
-	brew install ansible
-endif
 
 
 .PHONY: homebrew

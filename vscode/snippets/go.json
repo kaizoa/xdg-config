@@ -1,0 +1,81 @@
+{
+	// Place your snippets for go here. Each snippet is defined under a snippet name and has a prefix, body and
+	// description. The prefix is what is used to trigger the snippet and the body will be expanded and inserted. Possible variables are:
+	// $1, $2 for tab stops, $0 for the final cursor position, and ${1:label}, ${2:another} for placeholders. Placeholders with the
+	// same ids are connected.
+	// Example:
+	"var err error": {
+		"prefix": "varerr",
+		"body": ["var err error",""]
+	},
+	"if err != nil": {
+		"prefix": "iferr",
+		"body": ["if err != nil {", "\t$1", "}"]
+	},
+	"if e, a := ...": {
+		"prefix": "ifea",
+		"body": ["if e, a := $1; $2 {", "\t$3", "}"]
+	},
+	"e != a": {
+		"prefix": "ea",
+		"body": ["e != a"]
+	},
+	"!reflect.DeepEqual(e, a)": {
+		"prefix": "refea",
+		"body": ["!reflect.DeepEqual(e, a)"]
+	},
+	"t.Errorf(\"%+v\", err)": {
+		"prefix": "terr",
+		"body": ["t.Errorf(\"%+v\", err)"]
+	},
+	"t.Errorf(cause(\"%+v\", err))": {
+		"prefix": "terrc",
+		"body": ["t.Error(cause(\"%+v\", err))"]
+	},
+	"t.Errorf(\"{\\n\\t- %v\\n\\t+ %v\\n}\", e, a)": {
+		"prefix": "terrea",
+		"body": ["t.Errorf(\"{\\n\\t- %v\\n\\t+ %v\\n}\", e, a)"]
+	},
+	"t.Errorf(cause(\"{\\n\\t- %v\\n\\t+ %v\\n}\", e, a))": {
+		"prefix": "terrcea",
+		"body": ["t.Error(cause(\"{\\n\\t- %v\\n\\t+ %v\\n}\", e, a))"]
+	},
+	"t.Error(pretty.Compare(e, a))": {
+		"prefix": "terrpc",
+		"body": ["t.Error(pretty.Compare(e, a))"]
+	},
+	"t.Error(cause(pretty.Compare(e, a))": {
+		"prefix": "terrpcc",
+		"body": ["t.Error(cause(pretty.Compare(e, a)))"]
+	},
+	"return any": {
+		"prefix": "ret",
+		"body": ["return $1"]
+	},
+	"return err": {
+		"prefix": "reterr",
+		"body": ["return $1err"]
+	},
+	"return nil": {
+		"prefix": "retnil",
+		"body": ["return nil"]
+	},
+	"return nil, err": {
+		"prefix": "retne",
+		"body": ["return nil, err"]
+	},
+	"fmt.Println": {
+		"prefix": "fmtpln",
+		"body": [
+			"fmt.Println(\"$1\");"
+		],
+	},
+	"uuid.Nil": {
+		"prefix": "unil",
+		"body": ["uuid.Nil$1"],
+	},
+	"uuid.Equal(uuid.Nil, $1)": {
+		"prefix": "unileq",
+		"body": ["uuid.Equal(uuid.Nil, $1)"],
+	}
+}

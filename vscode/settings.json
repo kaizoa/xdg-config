@@ -23,7 +23,7 @@
     },
 
     "editor.fontSize":14,
-    "editor.fontFamily": "Ricty",
+    "editor.fontFamily": "Source Han Code JP",
     "editor.wordWrap": "on",
     "editor.minimap.enabled": false,
     "editor.cursorBlinking": "smooth",
@@ -42,14 +42,49 @@
 
     // "git.autofetch": true,
 
+    "go.goroot": "/Users/kaizoa/.anyenv/envs/goenv/versions/1.13.1",
     "go.gopath": "/Users/kaizoa/Codes",
+    "go.toolsGopath": "/Users/kaizoa/Codes",
+    "go.toolsEnvVars": {
+        "GO111MODULE": "on",
+    },
+    "go.enableCodeLens": {
+        "references": false,
+        "runtest": true
+    },
+    "go.gocodeAutoBuild": true,
+    "go.alternateTools": {
+        "go-langserver": "bingo",
+    },
+    "go.useLanguageServer": true,
+    // "go.languageServerFlags": [
+    //     "-enhance-signature-help",
+    //     "-trace",
+    //     "-format-style=goimports",
+    // ],
+    "go.languageServerExperimentalFeatures": {
+        "format": true,
+        "autoComplete": true,
+        "rename": true,
+        "goToDefinition": true,
+        "hover": true,
+        "signatureHelp": true,
+        "goToTypeDefinition": true,
+        "goToImplementation": true,
+        "documentSymbols": true,
+        "workspaceSymbols": true,
+        "findReferences": true
+    },
+    "go.installDependenciesWhenBuilding": false,
+    "go.buildOnSave": "off",
+    "go.formatTool": "goimports",
 
     "team.showWelcomeMessage": false,
 
     "vim.insertModeKeyBindings": [
         { "before": ["j","j"], "after": ["<Esc>"] }
     ],
-    "vim.otherModesKeyBindingsNonRecursive": [
+    "vim.normalModeKeyBindingsNonRecursive": [
         {"before": ["u"],      "after": [], "commands": [{"command": "undo"}]},
         {"before": ["<C-r>"],  "after": [], "commands": [{"command": "redo"}]},
         {"before": ["g", "r"], "after": [], "commands": [{"command": "editor.action.referenceSearch.trigger"}]},
@@ -58,11 +93,137 @@
         {"before": ["t", "f"], "after": [], "commands": [{"command": "workbench.files.action.focusFilesExplorer"}]},
     ],
     "vim.useSystemClipboard":true,
-    "vim.cmdLineInitialColon": true,
+    // "vim.cmdLineInitialColon": true,
     "vim.hlsearch": true,
     "vim.easymotion": true,
     "vim.visualstar": true,
     "vim.useCtrlKeys": true,
     "extensions.ignoreRecommendations": false,
     "explorer.confirmDelete": false,
+    "git.autofetch": true,
+
+    "todohighlight.isEnable": true,
+    "todohighlight.isCaseSensitive": true,
+    "todohighlight.keywords": [
+        "NOTE:",
+        {
+            "text": "TODO:",
+            "color": "white",
+            "backgroundColor": "tomato",
+        },
+        {
+            "text": "FIXME:",
+            "color": "white",
+            "backgroundColor": "hotpink",
+        },
+        {
+            "text": "BACKLOG:",
+            "color": "blue",
+            "backgroundColor": "azure",
+        },
+    ],
+    "todohighlight.defaultStyle": {
+        "color": "white",
+        "backgroundColor": "violet",
+        // "overviewRulerColor": "#ffab00",
+        "cursor": "pointer",
+        "border": "1px solid #eee",
+        "borderRadius": "2px",
+        "isWholeLine": true,
+    },
+    "todohighlight.include": [
+        "**/*.js",
+        "**/*.jsx",
+        "**/*.ts",
+        "**/*.tsx",
+        "**/*.html",
+        "**/*.php",
+        "**/*.css",
+        "**/*.scss",
+        "**/*.go",
+    ],
+    "todohighlight.exclude": [
+        "vendor/**",
+        "**/node_modules/**",
+        "**/bower_components/**",
+        "**/dist/**",
+        "**/build/**",
+        "**/.vscode/**",
+        "**/.github/**",
+        "**/_output/**",
+        "**/*.min.*",
+        "**/*.map",
+        "**/.next/**"
+    ],
+    "todohighlight.maxFilesForSearch": 5120,
+    "todohighlight.toggleURI": false,
+
+    "bracketPairColorizer.forceUniqueOpeningColor": true,
+    "bracketPairColorizer.forceIterationColorCycle": true,
+    "bracketPairColorizer.colorMode": "Consecutive",
+    "bracketPairColorizer.consecutivePairColors": [
+        "()", "[]", "{}",
+        [
+            "#508104",
+            "#9e8e01",
+            "#f3b800",
+            "#db8200",
+            "#b64201",
+        ],
+        "Red"
+    ],
+    "vsnotes.defaultNotePath": "/Users/kaizoa/Documents/VSNotes",
+    "plantuml.server": "http://localhost:3456",
+    "terminal.integrated.rendererType": "dom",
+    "explorer.confirmDragAndDrop": false,
+    "vsicons.dontShowNewVersionMessage": true,
+    "aws.samcli.location": "/usr/local/bin/sam",
+    "git.confirmSync": false,
+    "go.lintFlags": [
+        "-min_confidence=1.1"
+    ],
+    "[typescriptreact]": {
+        "editor.defaultFormatter": "esbenp.prettier-vscode"
+    },
+    "[json]": {
+        "editor.defaultFormatter": "vscode.json-language-features"
+    },
+    "[typescript]": {
+        "editor.defaultFormatter": "esbenp.prettier-vscode"
+    },
+    "[javascript]": {
+        "editor.defaultFormatter": "esbenp.prettier-vscode"
+    },
+    "debug.openDebug": "openOnDebugBreak",
+    "diffEditor.ignoreTrimWhitespace": false,
+    "[jsonc]": {
+        "editor.defaultFormatter": "esbenp.prettier-vscode"
+    },
+    "typescript.updateImportsOnFileMove.enabled": "always",
+    "javascript.updateImportsOnFileMove.enabled": "always",
+    "team.showFarewellMessage": false,
+    "[html]": {
+        "editor.defaultFormatter": "esbenp.prettier-vscode"
+    },
+    "editor.suggestSelection": "first",
+    "vsintellicode.modify.editor.suggestSelection": "automaticallyOverrodeDefaultValue",
+    "editor.rulers": [80, 100],
+    // "bracketPairColorizer.colorMode": "Independent",
+    // "bracketPairColorizer.independentPairColors": [
+    //     [
+    //       "()",
+    //       ["Gold", "Orchid", "LightSkyBlue"],
+    //       "Red"
+    //     ],
+    //     [
+    //       "[]",
+    //       ["Gold", "Orchid", "LightSkyBlue"],
+    //       "Red"
+    //     ],
+    //     [
+    //       "{}",
+    //       ["Gold", "Orchid", "LightSkyBlue"],
+    //       "Red"
+    //     ]
+    //   ]
 }

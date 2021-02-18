@@ -6,17 +6,6 @@ set -x PATH $PATH /usr/local/bin
 
 ulimit -n 1024
 
-# Anyenv settings {{{
-if [ -d $HOME/.anyenv ]
-  set -x ANY_ENV_HOME $HOME/.anyenv
-  set -x PATH $HOME/.anyenv/bin $PATH
-  if [ ! -f $HOME/.anyenv/init.fish ]
-    anyenv init - > $HOME/.anyenv/init.fish
-  end
-  source $HOME/.anyenv/init.fish
-end
-# }}}
-
 
 # Direnv settings {{{
 set -x EDITOR nvim
@@ -51,21 +40,67 @@ if [ ! -d $DEFAULT_CHEAT_DIR ]
 end
 # }}}
 
+
 # Vim settings {{{
 alias vim nvim
 alias vi  vim
 # }}}
 
 
+# Editor settings {{{
+alias e "code -r --wait"
+# }}}
+
+
 # Tig settings {{{
 set -x TIGRC_USER $XDG_CONFIG_HOME/tig/tigrc
-alias tig "tig --all"
+# alias tig "tig --all"
+# }}}
+
+
+# Anyenv settings {{{
+if [ -d $HOME/.anyenv ]
+  set -x ANY_ENV_HOME $HOME/.anyenv
+  set -x PATH $HOME/.anyenv/bin $PATH
+  #eval (anyenv init -)
+  source ~/.anyenv/completions/anyenv.fish
+  function anyenv
+    set command $argv[1]
+    set -e argv[1]
+    command anyenv "$command" $argv
+  end
+end
 # }}}
 
 
 # PHP settings {{{
-set -x XDEBUG_CONFIG  on
-set -x PHP_IDE_CONFIG 'serverName=localhost'
+set -g fish_user_paths "/usr/local/opt/icu4c/bin" $fish_user_paths
+set -g fish_user_paths "/usr/local/opt/icu4c/sbin" $fish_user_paths
+set -g fish_user_paths "/usr/local/opt/libxml2/bin" $fish_user_paths
+set -g fish_user_paths "/usr/local/opt/openssl@1.1/bin" $fish_user_paths
+set -g fish_user_paths "/usr/local/opt/bzip2/bin" $fish_user_paths
+set -g fish_user_paths "/usr/local/opt/libiconv/bin" $fish_user_paths
+set -g fish_user_paths "/usr/local/opt/bison/bin" $fish_user_paths
+set -g fish_user_paths "/usr/local/opt/curl/bin" $fish_user_paths
+[ -e ~/.phpbrew/phpbrew.fish ]; and source ~/.phpbrew/phpbrew.fish
+# if [ -d $HOME/.anyenv/envs/phpenv ]
+#   set -x XDEBUG_CONFIG  on
+#   set -x PHP_IDE_CONFIG 'serverName=localhost'
+#   #eval (phpenv init -)
+#   set -gx PATH "$HOME/.anyenv/envs/phpenv/bin" $PATH
+#   set -gx PATH "$HOME/.anyenv/envs/phpenv/shims" $PATH
+#   phpenv rehash >/dev/null ^&1
+#   function phpenv
+#     set command $argv[1]
+#     set -e argv[1]
+#     switch "$command"
+#     case shell
+#       source (phpenv "sh-$command" $argv|psub)
+#     case '*'
+#       command phpenv "$command" $argv
+#     end
+#   end
+# end
 # }}}
 
 
@@ -79,16 +114,83 @@ set -x PHP_IDE_CONFIG 'serverName=localhost'
 
 
 # Go settings {{{
-set -x GOPATH $HOME/Codes
+set -x GOPATH "$HOME/Codes"
 if [ ! -d $GOPATH/bin ]
   mkdir -p $GOPATH/bin
 end
-set -x PATH   $GOPATH/bin $PATH
-function GOROOT_update
-  set -x GOROOT (goenv exec go env GOROOT)
-  set -x PATH   $GOROOT/bin $PATH
+if [ -d $HOME/.anyenv/envs/goenv ]
+
+  set -x GOENV_ROOT "$HOME/.anyenv/envs/goenv"
+  set -x PATH "$GOENV_ROOT/bin" $PATH
+  #eval (goenv init -)
+  set -gx PATH "$HOME/.anyenv/envs/goenv/shims" $PATH
+  set -gx GOENV_SHELL fish
+  source "$HOME/.anyenv/envs/goenv/completions/goenv.fish"
+  command goenv rehash 2>/dev/null
+  function goenv
+    set command $argv[1]
+    set -e argv[1]
+    switch "$command"
+    case rehash shell
+      source (goenv "sh-$command" $argv|psub)
+    case '*'
+      command goenv "$command" $argv
+    end
+  end
+
+  set -x PATH $GOPATH/bin $PATH
+  function GOROOT_update
+    set -x GOROOT (goenv exec go env GOROOT)
+    set -x PATH   $GOROOT/bin $PATH
+  end
+  GOROOT_update
 end
-GOROOT_update
+# }}}
+
+
+# Python settings {{{
+if [ -d $HOME/.anyenv/envs/pyenv ]
+  set -x PYENV_ROOT "$HOME/.anyenv/envs/pyenv"
+  set -x PATH "$PYENV_ROOT/bin" $PATH
+  #eval (pyenv init -)
+  set -gx PATH "$HOME/.anyenv/envs/pyenv/shims" $PATH
+  set -gx PYENV_SHELL fish
+  source "$HOME/.anyenv/envs/pyenv/completions/pyenv.fish"
+  command pyenv rehash 2>/dev/null
+  function pyenv
+    set command $argv[1]
+    set -e argv[1]
+    switch "$command"
+    case activate deactivate rehash shell
+      source (pyenv "sh-$command" $argv|psub)
+    case '*'
+      command pyenv "$command" $argv
+    end
+  end
+end
+# }}}
+
+
+# Node.js settings {{{
+if [ -d $HOME/.anyenv/envs/ndenv ]
+  set -x NDENV_ROOT "$HOME/.anyenv/envs/ndenv"
+  set -x PATH "$HOME/.anyenv/envs/ndenv/bin" $PATH
+  #eval (ndenv init -)
+  set -gx PATH "$NDENV_ROOT/shims" $PATH
+  set -gx NDENV_SHELL fish
+  command ndenv rehash 2>/dev/null
+  function ndenv
+    set command $argv[1]
+    set -e argv[1]
+
+    switch "$command"
+    case rehash shell
+      source (ndenv "sh-$command" $argv|psub)
+    case '*'
+      command ndenv "$command" $argv
+    end
+  end
+end
 # }}}
 
 
@@ -127,4 +229,7 @@ alias gh-top 'hub browse (ghq list | peco | cut -d "/" -f 2,3)'
 eval (hub alias -s)
 
 # Run tmux
-pgrep tmux > /dev/null ^&1; or tmux -f $XDG_CONFIG_HOME/tmux/tmux.conf
+# pgrep tmux > /dev/null ^&1; or tmux -f $XDG_CONFIG_HOME/tmux/tmux.conf
+
+# Homebrew
+set -g fish_user_paths "/usr/local/sbin" $fish_user_paths

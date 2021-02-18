@@ -1,0 +1,449 @@
+#! /usr/bin/env zsh -Ceu
+
+set -x XDG_CONFIG_HOME ~/.config
+
+set -x LANG en_US.UTF-8
+#set -x PATH $PATH ~/Library/Android/sdk/platform-tools
+set -x PATH $PATH /usr/local/bin
+
+ulimit -n 1024
+
+
+# Direnv settings {{{
+set -x EDITOR nvim
+eval (direnv hook fish)
+# }}}
+
+
+# coreutils settings {{{
+set COREUTILS_PATH /usr/local/opt/coreutils/libexec/gnubin
+if [ -s $COREUTILS_PATH ]
+  set -x PATH $COREUTILS_PATH $PATH
+end
+# }}}
+
+
+# SSH settings {{{
+if [ -s "$XDG_CONFIG_HOME/ssh/conendg" ]
+  set SSH_CONFIG "-F $XDG_CONFIG_HOME/ssh/conendg"
+end
+if [ -s "$XDG_CONFIG_HOME/ssh/id_dsa" ]
+  set SSH_ID "-i $XDG_CONFIG_HOME/ssh/id_dsa"
+end
+alias ssh         ssh $SSH_CONFIG $SSH_ID
+alias ssh-copy-id ssh-copy-id $SSH_ID
+# }}}
+
+
+# cheat {{{
+set -x DEFAULT_CHEAT_DIR $XDG_CONFIG_HOME/cheat
+if [ ! -d $DEFAULT_CHEAT_DIR ]
+  mkdir -p $DEFAULT_CHEAT_DIR
+end
+# }}}
+
+
+# Vim settings {{{
+alias vim nvim
+alias vi  vim
+# }}}
+
+
+# Editor settings {{{
+alias e "code -r --wait"
+# }}}
+
+
+# Tig settings {{{
+set -x TIGRC_USER $XDG_CONFIG_HOME/tig/tigrc
+# alias tig "tig --all"
+# }}}
+
+
+# Anyenv settings {{{
+if [ -d $HOME/.anyenv ]
+  set -x ANY_ENV_HOME $HOME/.anyenv
+  set -x PATH $HOME/.anyenv/bin $PATH
+  #eval (anyenv init -)
+  source ~/.anyenv/completions/anyenv.fish
+  function anyenv
+    set command $argv[1]
+    set -e argv[1]
+    command anyenv "$command" $argv
+  end
+end
+# }}}
+
+
+# PHP settings {{{
+if [ -d $HOME/.anyenv/envs/phpenv ]
+  set -x XDEBUG_CONFIG  on
+  set -x PHP_IDE_CONFIG 'serverName=localhost'
+  #eval (phpenv init -)
+  set -gx PATH "$HOME/.anyenv/envs/phpenv/bin" $PATH
+  set -gx PATH "$HOME/.anyenv/envs/phpenv/shims" $PATH
+  phpenv rehash >/dev/null ^&1
+  function phpenv
+    set command $argv[1]
+    set -e argv[1]
+    switch "$command"
+    case shell
+      source (phpenv "sh-$command" $argv|psub)
+    case '*'
+      command phpenv "$command" $argv
+    end
+  end
+end
+# }}}
+
+
+# Ruby settings {{{
+#set -x GEM_HOME $HOME/.gem
+#set -x PATH     $GEM_HOME/ruby/2.0.0/bin:$PATH
+#set -x PATH     $GEM_HOME/bin/:$PATH
+#[ ! -d "~/.gem" ]; and mkdir ~/.gem
+#set -x GEM_HOME ~/.gem
+# }}}
+
+
+# Go settings {{{
+set -x GOPATH "$HOME/Codes"
+if [ ! -d $GOPATH/bin ]
+  mkdir -p $GOPATH/bin
+end
+if [ -d $HOME/.anyenv/envs/goenv ]
+
+  set -x GOENV_ROOT "$HOME/.anyenv/envs/goenv"
+  set -x PATH "$GOENV_ROOT/bin" $PATH
+  #eval (goenv init -)
+  set -gx PATH "$HOME/.anyenv/envs/goenv/shims" $PATH
+  set -gx GOENV_SHELL fish
+  source "$HOME/.anyenv/envs/goenv/completions/goenv.fish"
+  command goenv rehash 2>/dev/null
+  function goenv
+    set command $argv[1]
+    set -e argv[1]
+    switch "$command"
+    case rehash shell
+      source (goenv "sh-$command" $argv|psub)
+    case '*'
+      command goenv "$command" $argv
+    end
+  end
+
+  set -x PATH $GOPATH/bin $PATH
+  function GOROOT_update
+    set -x GOROOT (goenv exec go env GOROOT)
+    set -x PATH   $GOROOT/bin $PATH
+  end
+  GOROOT_update
+end
+# }}}
+
+
+# Python settings {{{
+if [ -d $HOME/.anyenv/envs/pyenv ]
+  set -x PYENV_ROOT "$HOME/.anyenv/envs/pyenv"
+  set -x PATH "$PYENV_ROOT/bin" $PATH
+  #eval (pyenv init -)
+  set -gx PATH "$HOME/.anyenv/envs/pyenv/shims" $PATH
+  set -gx PYENV_SHELL fish
+  source "$HOME/.anyenv/envs/pyenv/completions/pyenv.fish"
+  command pyenv rehash 2>/dev/null
+  function pyenv
+    set command $argv[1]
+    set -e argv[1]
+    switch "$command"
+    case activate deactivate rehash shell
+      source (pyenv "sh-$command" $argv|psub)
+    case '*'
+      command pyenv "$command" $argv
+    end
+  end
+end
+# }}}
+
+
+# Node.js settings {{{
+if [ -d $HOME/.anyenv/envs/ndenv ]
+  set -x NDENV_ROOT "$HOME/.anyenv/envs/ndenv"
+  set -x PATH "$HOME/.anyenv/envs/ndenv/bin" $PATH
+  #eval (ndenv init -)
+  set -gx PATH "$NDENV_ROOT/shims" $PATH
+  set -gx NDENV_SHELL fish
+  command ndenv rehash 2>/dev/null
+  function ndenv
+    set command $argv[1]
+    set -e argv[1]
+
+    switch "$command"
+    case rehash shell
+      source (ndenv "sh-$command" $argv|psub)
+    case '*'
+      command ndenv "$command" $argv
+    end
+  end
+end
+# }}}
+
+
+# Term settings {{{
+if [ (uname -s) = "Linux" ]
+  set -x TERM "screen-256color"
+end
+if [ (uname -s) = "Darwin" ]; and [ ! -f ~/.cache/term/"$TERM".ti ]
+  mkdir -p ~/.cache/term
+  #infocmp "$TERM" | sed 's/kbs=^[hH]/kbs=\\177/' >| ~/.cache/term/"$TERM".ti
+  #tic ~/.cache/term/"$TERM".ti
+end
+# }}}
+
+
+#function brew-cask-upgrade
+#  for app in (brew cask list)
+#    local latest=(brew cask info $app | awk 'NR==1{print $2}');
+#    local versions=(ls -1 "/usr/local/Caskroom/$app/.metadata/");
+#    local current=(echo $versions | awk '{print $NF}');
+#    if [ "$latest" = "latest" ]
+#      echo "[!] $app: $current == $latest";
+#      [ "$1" = "-f" ]; and brew cask install "$app" --force;
+#      continue;
+#    else if [ "$current" = "$latest" ]
+#      continue;
+#    end
+#    echo "[+] $app: $current -> $latest";
+#    brew cask uninstall "$app" --force;
+#    brew cask install "$app";
+#  end
+#end
+
+alias gp 'cd (ghq root)/(ghq list | peco)'
+alias gh-top 'hub browse (ghq list | peco | cut -d "/" -f 2,3)'
+eval (hub alias -s)
+
+# Run tmux
+# pgrep tmux > /dev/null ^&1; or tmux -f $XDG_CONFIG_HOME/tmux/tmux.conf
+set -x XDG_CONFIG_HOME ~/.config
+
+set -x LANG en_US.UTF-8
+#set -x PATH $PATH ~/Library/Android/sdk/platform-tools
+set -x PATH $PATH /usr/local/bin
+
+ulimit -n 1024
+
+
+# Direnv settings {{{
+set -x EDITOR nvim
+eval (direnv hook fish)
+# }}}
+
+
+# coreutils settings {{{
+set COREUTILS_PATH /usr/local/opt/coreutils/libexec/gnubin
+if [ -s $COREUTILS_PATH ]
+  set -x PATH $COREUTILS_PATH $PATH
+end
+# }}}
+
+
+# SSH settings {{{
+if [ -s "$XDG_CONFIG_HOME/ssh/conendg" ]
+  set SSH_CONFIG "-F $XDG_CONFIG_HOME/ssh/conendg"
+end
+if [ -s "$XDG_CONFIG_HOME/ssh/id_dsa" ]
+  set SSH_ID "-i $XDG_CONFIG_HOME/ssh/id_dsa"
+end
+alias ssh         ssh $SSH_CONFIG $SSH_ID
+alias ssh-copy-id ssh-copy-id $SSH_ID
+# }}}
+
+
+# cheat {{{
+set -x DEFAULT_CHEAT_DIR $XDG_CONFIG_HOME/cheat
+if [ ! -d $DEFAULT_CHEAT_DIR ]
+  mkdir -p $DEFAULT_CHEAT_DIR
+end
+# }}}
+
+
+# Vim settings {{{
+alias vim nvim
+alias vi  vim
+# }}}
+
+
+# Editor settings {{{
+alias e "code -r --wait"
+# }}}
+
+
+# Tig settings {{{
+set -x TIGRC_USER $XDG_CONFIG_HOME/tig/tigrc
+# alias tig "tig --all"
+# }}}
+
+
+# Anyenv settings {{{
+if [ -d $HOME/.anyenv ]
+  set -x ANY_ENV_HOME $HOME/.anyenv
+  set -x PATH $HOME/.anyenv/bin $PATH
+  #eval (anyenv init -)
+  source ~/.anyenv/completions/anyenv.fish
+  function anyenv
+    set command $argv[1]
+    set -e argv[1]
+    command anyenv "$command" $argv
+  end
+end
+# }}}
+
+
+# PHP settings {{{
+if [ -d $HOME/.anyenv/envs/phpenv ]
+  set -x XDEBUG_CONFIG  on
+  set -x PHP_IDE_CONFIG 'serverName=localhost'
+  #eval (phpenv init -)
+  set -gx PATH "$HOME/.anyenv/envs/phpenv/bin" $PATH
+  set -gx PATH "$HOME/.anyenv/envs/phpenv/shims" $PATH
+  phpenv rehash >/dev/null ^&1
+  function phpenv
+    set command $argv[1]
+    set -e argv[1]
+    switch "$command"
+    case shell
+      source (phpenv "sh-$command" $argv|psub)
+    case '*'
+      command phpenv "$command" $argv
+    end
+  end
+end
+# }}}
+
+
+# Ruby settings {{{
+#set -x GEM_HOME $HOME/.gem
+#set -x PATH     $GEM_HOME/ruby/2.0.0/bin:$PATH
+#set -x PATH     $GEM_HOME/bin/:$PATH
+#[ ! -d "~/.gem" ]; and mkdir ~/.gem
+#set -x GEM_HOME ~/.gem
+# }}}
+
+
+# Go settings {{{
+set -x GOPATH "$HOME/Codes"
+if [ ! -d $GOPATH/bin ]
+  mkdir -p $GOPATH/bin
+end
+if [ -d $HOME/.anyenv/envs/goenv ]
+
+  set -x GOENV_ROOT "$HOME/.anyenv/envs/goenv"
+  set -x PATH "$GOENV_ROOT/bin" $PATH
+  #eval (goenv init -)
+  set -gx PATH "$HOME/.anyenv/envs/goenv/shims" $PATH
+  set -gx GOENV_SHELL fish
+  source "$HOME/.anyenv/envs/goenv/completions/goenv.fish"
+  command goenv rehash 2>/dev/null
+  function goenv
+    set command $argv[1]
+    set -e argv[1]
+    switch "$command"
+    case rehash shell
+      source (goenv "sh-$command" $argv|psub)
+    case '*'
+      command goenv "$command" $argv
+    end
+  end
+
+  set -x PATH $GOPATH/bin $PATH
+  function GOROOT_update
+    set -x GOROOT (goenv exec go env GOROOT)
+    set -x PATH   $GOROOT/bin $PATH
+  end
+  GOROOT_update
+end
+# }}}
+
+
+# Python settings {{{
+if [ -d $HOME/.anyenv/envs/pyenv ]
+  set -x PYENV_ROOT "$HOME/.anyenv/envs/pyenv"
+  set -x PATH "$PYENV_ROOT/bin" $PATH
+  #eval (pyenv init -)
+  set -gx PATH "$HOME/.anyenv/envs/pyenv/shims" $PATH
+  set -gx PYENV_SHELL fish
+  source "$HOME/.anyenv/envs/pyenv/completions/pyenv.fish"
+  command pyenv rehash 2>/dev/null
+  function pyenv
+    set command $argv[1]
+    set -e argv[1]
+    switch "$command"
+    case activate deactivate rehash shell
+      source (pyenv "sh-$command" $argv|psub)
+    case '*'
+      command pyenv "$command" $argv
+    end
+  end
+end
+# }}}
+
+
+# Node.js settings {{{
+if [ -d $HOME/.anyenv/envs/ndenv ]
+  set -x NDENV_ROOT "$HOME/.anyenv/envs/ndenv"
+  set -x PATH "$HOME/.anyenv/envs/ndenv/bin" $PATH
+  #eval (ndenv init -)
+  set -gx PATH "$NDENV_ROOT/shims" $PATH
+  set -gx NDENV_SHELL fish
+  command ndenv rehash 2>/dev/null
+  function ndenv
+    set command $argv[1]
+    set -e argv[1]
+
+    switch "$command"
+    case rehash shell
+      source (ndenv "sh-$command" $argv|psub)
+    case '*'
+      command ndenv "$command" $argv
+    end
+  end
+end
+# }}}
+
+
+# Term settings {{{
+if [ (uname -s) = "Linux" ]
+  set -x TERM "screen-256color"
+end
+if [ (uname -s) = "Darwin" ]; and [ ! -f ~/.cache/term/"$TERM".ti ]
+  mkdir -p ~/.cache/term
+  #infocmp "$TERM" | sed 's/kbs=^[hH]/kbs=\\177/' >| ~/.cache/term/"$TERM".ti
+  #tic ~/.cache/term/"$TERM".ti
+end
+# }}}
+
+
+#function brew-cask-upgrade
+#  for app in (brew cask list)
+#    local latest=(brew cask info $app | awk 'NR==1{print $2}');
+#    local versions=(ls -1 "/usr/local/Caskroom/$app/.metadata/");
+#    local current=(echo $versions | awk '{print $NF}');
+#    if [ "$latest" = "latest" ]
+#      echo "[!] $app: $current == $latest";
+#      [ "$1" = "-f" ]; and brew cask install "$app" --force;
+#      continue;
+#    else if [ "$current" = "$latest" ]
+#      continue;
+#    end
+#    echo "[+] $app: $current -> $latest";
+#    brew cask uninstall "$app" --force;
+#    brew cask install "$app";
+#  end
+#end
+
+alias gp 'cd (ghq root)/(ghq list | peco)'
+alias gh-top 'hub browse (ghq list | peco | cut -d "/" -f 2,3)'
+eval (hub alias -s)
+
+# Run tmux
+# pgrep tmux > /dev/null ^&1; or tmux -f $XDG_CONFIG_HOME/tmux/tmux.conf
+
