@@ -1,15 +1,29 @@
+set -x XDG_DATA_HOME ~/.local/share
 set -x XDG_CONFIG_HOME ~/.config
+set -x XDG_CACHE_HOME ~/.cache
 
 set -x LANG en_US.UTF-8
 #set -x PATH $PATH ~/Library/Android/sdk/platform-tools
 set -x PATH $PATH /usr/local/bin
+set -g fish_user_paths "/usr/local/sbin" $fish_user_paths
 
 ulimit -n 1024
 
 
 # Direnv settings {{{
-set -x EDITOR nvim
+# set -x EDITOR nvim
+set -x EDITOR "code -r --wait"
 eval (direnv hook fish)
+# }}}
+
+
+# Vim settings {{{
+alias vim nvim
+alias vi  vim
+# }}}
+
+# Editor settings {{{
+alias ed $EDITOR
 # }}}
 
 
@@ -41,17 +55,6 @@ end
 # }}}
 
 
-# Vim settings {{{
-alias vim nvim
-alias vi  vim
-# }}}
-
-
-# Editor settings {{{
-alias e "code -r --wait"
-# }}}
-
-
 # Tig settings {{{
 set -x TIGRC_USER $XDG_CONFIG_HOME/tig/tigrc
 # alias tig "tig --all"
@@ -59,17 +62,17 @@ set -x TIGRC_USER $XDG_CONFIG_HOME/tig/tigrc
 
 
 # Anyenv settings {{{
-if [ -d $HOME/.anyenv ]
-  set -x ANY_ENV_HOME $HOME/.anyenv
-  set -x PATH $HOME/.anyenv/bin $PATH
-  #eval (anyenv init -)
-  source ~/.anyenv/completions/anyenv.fish
-  function anyenv
-    set command $argv[1]
-    set -e argv[1]
-    command anyenv "$command" $argv
-  end
-end
+# if [ -d $HOME/.anyenv ]
+#   set -x ANY_ENV_HOME $HOME/.anyenv
+#   set -x PATH $HOME/.anyenv/bin $PATH
+#   #eval (anyenv init -)
+#   source ~/.anyenv/completions/anyenv.fish
+#   function anyenv
+#     set command $argv[1]
+#     set -e argv[1]
+#     command anyenv "$command" $argv
+#   end
+# end
 # }}}
 
 
@@ -82,26 +85,6 @@ set -g fish_user_paths "/usr/local/opt/bzip2/bin" $fish_user_paths
 set -g fish_user_paths "/usr/local/opt/libiconv/bin" $fish_user_paths
 set -g fish_user_paths "/usr/local/opt/bison/bin" $fish_user_paths
 set -g fish_user_paths "/usr/local/opt/curl/bin" $fish_user_paths
-[ -e ~/.phpbrew/phpbrew.fish ]; and source ~/.phpbrew/phpbrew.fish
-# if [ -d $HOME/.anyenv/envs/phpenv ]
-#   set -x XDEBUG_CONFIG  on
-#   set -x PHP_IDE_CONFIG 'serverName=localhost'
-#   #eval (phpenv init -)
-#   set -gx PATH "$HOME/.anyenv/envs/phpenv/bin" $PATH
-#   set -gx PATH "$HOME/.anyenv/envs/phpenv/shims" $PATH
-#   phpenv rehash >/dev/null ^&1
-#   function phpenv
-#     set command $argv[1]
-#     set -e argv[1]
-#     switch "$command"
-#     case shell
-#       source (phpenv "sh-$command" $argv|psub)
-#     case '*'
-#       command phpenv "$command" $argv
-#     end
-#   end
-# end
-# }}}
 
 
 # Ruby settings {{{
@@ -118,80 +101,6 @@ set -x GOPATH "$HOME/Codes"
 if [ ! -d $GOPATH/bin ]
   mkdir -p $GOPATH/bin
 end
-if [ -d $HOME/.anyenv/envs/goenv ]
-
-  set -x GOENV_ROOT "$HOME/.anyenv/envs/goenv"
-  set -x PATH "$GOENV_ROOT/bin" $PATH
-  #eval (goenv init -)
-  set -gx PATH "$HOME/.anyenv/envs/goenv/shims" $PATH
-  set -gx GOENV_SHELL fish
-  source "$HOME/.anyenv/envs/goenv/completions/goenv.fish"
-  command goenv rehash 2>/dev/null
-  function goenv
-    set command $argv[1]
-    set -e argv[1]
-    switch "$command"
-    case rehash shell
-      source (goenv "sh-$command" $argv|psub)
-    case '*'
-      command goenv "$command" $argv
-    end
-  end
-
-  set -x PATH $GOPATH/bin $PATH
-  function GOROOT_update
-    set -x GOROOT (goenv exec go env GOROOT)
-    set -x PATH   $GOROOT/bin $PATH
-  end
-  GOROOT_update
-end
-# }}}
-
-
-# Python settings {{{
-if [ -d $HOME/.anyenv/envs/pyenv ]
-  set -x PYENV_ROOT "$HOME/.anyenv/envs/pyenv"
-  set -x PATH "$PYENV_ROOT/bin" $PATH
-  #eval (pyenv init -)
-  set -gx PATH "$HOME/.anyenv/envs/pyenv/shims" $PATH
-  set -gx PYENV_SHELL fish
-  source "$HOME/.anyenv/envs/pyenv/completions/pyenv.fish"
-  command pyenv rehash 2>/dev/null
-  function pyenv
-    set command $argv[1]
-    set -e argv[1]
-    switch "$command"
-    case activate deactivate rehash shell
-      source (pyenv "sh-$command" $argv|psub)
-    case '*'
-      command pyenv "$command" $argv
-    end
-  end
-end
-# }}}
-
-
-# Node.js settings {{{
-if [ -d $HOME/.anyenv/envs/ndenv ]
-  set -x NDENV_ROOT "$HOME/.anyenv/envs/ndenv"
-  set -x PATH "$HOME/.anyenv/envs/ndenv/bin" $PATH
-  #eval (ndenv init -)
-  set -gx PATH "$NDENV_ROOT/shims" $PATH
-  set -gx NDENV_SHELL fish
-  command ndenv rehash 2>/dev/null
-  function ndenv
-    set command $argv[1]
-    set -e argv[1]
-
-    switch "$command"
-    case rehash shell
-      source (ndenv "sh-$command" $argv|psub)
-    case '*'
-      command ndenv "$command" $argv
-    end
-  end
-end
-# }}}
 
 
 # Term settings {{{
@@ -205,25 +114,6 @@ if [ (uname -s) = "Darwin" ]; and [ ! -f ~/.cache/term/"$TERM".ti ]
 end
 # }}}
 
-
-#function brew-cask-upgrade
-#  for app in (brew cask list)
-#    local latest=(brew cask info $app | awk 'NR==1{print $2}');
-#    local versions=(ls -1 "/usr/local/Caskroom/$app/.metadata/");
-#    local current=(echo $versions | awk '{print $NF}');
-#    if [ "$latest" = "latest" ]
-#      echo "[!] $app: $current == $latest";
-#      [ "$1" = "-f" ]; and brew cask install "$app" --force;
-#      continue;
-#    else if [ "$current" = "$latest" ]
-#      continue;
-#    end
-#    echo "[+] $app: $current -> $latest";
-#    brew cask uninstall "$app" --force;
-#    brew cask install "$app";
-#  end
-#end
-
 alias gp 'cd (ghq root)/(ghq list | peco)'
 alias gh-top 'hub browse (ghq list | peco | cut -d "/" -f 2,3)'
 eval (hub alias -s)
@@ -231,5 +121,9 @@ eval (hub alias -s)
 # Run tmux
 # pgrep tmux > /dev/null ^&1; or tmux -f $XDG_CONFIG_HOME/tmux/tmux.conf
 
-# Homebrew
-set -g fish_user_paths "/usr/local/sbin" $fish_user_paths
+# asdf
+set -x ASDF_CONFIG_FILE $XDG_CONFIG_HOME/asdf/asdfrc
+set -x ASDF_DATA_DIR $XDG_DATA_HOME/asdf
+set -x ASDF_GOLANG_VERSION 1.16
+set -x ASDF_NODEJS_VERSION 15.9.0
+source /usr/local/opt/asdf/asdf.fish

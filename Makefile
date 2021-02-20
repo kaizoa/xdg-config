@@ -9,10 +9,14 @@ ansible-playbook: ansible
 	cd ansible; $(ANSIBLE_PLAYBOOK) playbook.yml
 
 
+XDG_DATA_HOME=$(HOME)/.local/share
 XDG_CONFIG_HOME=$(HOME)/.config
+XDG_CACHE_HOME=$(HOME)/.cache
 
 .PHONY: xdg-config
 xdg-config:
+	mkdir -p ${XDG_DATA_HOME}
+	mkdir -p ${XDG_CACHE_HOME}
 	ln -fns $(shell pwd) ${XDG_CONFIG_HOME}
 
 
